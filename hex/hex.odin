@@ -3,8 +3,18 @@ package hex
 // @note(bp): transcoding hexidecimal strings to/from byte slices
 
 
-encode :: proc(bytes: []byte, allocator := context.allocator) -> string {
+encode :: encode_lowercase;
+encode_uppercase :: proc(bytes: []byte, allocator := context.allocator) -> string {
     lut: [16]byte = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    buf := make([]byte, len(bytes)*2, allocator);
+    for i: i32 = 0; i < i32(len(bytes)); i += 1 {
+        buf[i*2+0] = lut[bytes[i] >> 4 & 0xF];
+        buf[i*2+1] = lut[bytes[i]      & 0xF];
+    }
+    return string(buf);
+}
+encode_lowercase :: proc(bytes: []byte, allocator := context.allocator) -> string {
+    lut: [16]byte = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
     buf := make([]byte, len(bytes)*2, allocator);
     for i: i32 = 0; i < i32(len(bytes)); i += 1 {
         buf[i*2+0] = lut[bytes[i] >> 4 & 0xF];
