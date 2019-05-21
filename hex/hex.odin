@@ -5,7 +5,7 @@ package hex
 
 encode :: encode_lowercase;
 encode_uppercase :: proc(bytes: []byte, allocator := context.allocator) -> string {
-    lut: [16]byte = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+    lut: [16]byte = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
     buf := make([]byte, len(bytes)*2, allocator);
     for i: i32 = 0; i < i32(len(bytes)); i += 1 {
         buf[i*2+0] = lut[bytes[i] >> 4 & 0xF];
@@ -14,7 +14,7 @@ encode_uppercase :: proc(bytes: []byte, allocator := context.allocator) -> strin
     return string(buf);
 }
 encode_lowercase :: proc(bytes: []byte, allocator := context.allocator) -> string {
-    lut: [16]byte = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    lut: [16]byte = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     buf := make([]byte, len(bytes)*2, allocator);
     for i: i32 = 0; i < i32(len(bytes)); i += 1 {
         buf[i*2+0] = lut[bytes[i] >> 4 & 0xF];
