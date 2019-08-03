@@ -2,6 +2,13 @@ package base64
 
 // @ref(zh): https://rosettacode.org/wiki/Base64_encode_data#Java
 
+// @note(zh): Encoding utility for Base64
+// A secondary param can be used to supply a custom alphabet to
+// @link(encode) and a matching decoding table to @link(decode). 
+// If none is supplied it just uses the standard Base64 alphabet.
+// Incase your specific version does not use padding, you can may
+// truncate it from the encoded output.
+
 ENC_TABLE := [64]byte {
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
     'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 
@@ -34,7 +41,7 @@ DEC_TABLE := [128]int {
     49, 50, 51, -1, -1, -1, -1, -1
 };
 
-encode :: proc(data: []byte) -> string #no_bounds_check {
+encode :: proc(data: []byte, ENC_TBL := ENC_TABLE) -> string #no_bounds_check {
     length := len(data);
     if length == 0 do return "";
 
@@ -51,18 +58,17 @@ encode :: proc(data: []byte) -> string #no_bounds_check {
 
         block = (c0 << 16) | (max(c1, 0) << 8) | max(c2, 0);
 
-        out[d]     = ENC_TABLE[block >> 18 & 63];
-        out[d + 1] = ENC_TABLE[block >> 12 & 63];
-        out[d + 2] = c1 == 0 ? PADDING : ENC_TABLE[block >> 6 & 63];
-        out[d + 3] = c2 == 0 ? PADDING : ENC_TABLE[block & 63];
+        out[d]     = ENC_TBL[block >> 18 & 63];
+        out[d + 1] = ENC_TBL[block >> 12 & 63];
+        out[d + 2] = c1 == 0 ? PADDING : ENC_TBL[block >> 6 & 63];
+        out[d + 3] = c2 == 0 ? PADDING : ENC_TBL[block & 63];
     }
     return string(out);
 }
 
-decode :: proc(data: string) -> []byte #no_bounds_check{
+decode :: proc(data: string, DEC_TBL := DEC_TABLE) -> []byte #no_bounds_check{
     length := len(data);
     if length == 0 do return []byte{};
-    assert(length % 4 == 0, "Malformed Base64 input");
 
     pad_count := data[length - 1] == PADDING ? (data[length - 2] == PADDING ? 2 : 1) : 0;
     out_length := ((length * 6) >> 3) - pad_count;
@@ -72,10 +78,10 @@ decode :: proc(data: string) -> []byte #no_bounds_check{
     b0, b1, b2: int;
 
     for i, j := 0, 0; i < length; i, j = i + 4, j + 3 {
-        c0 = DEC_TABLE[data[i]];
-        c1 = DEC_TABLE[data[i + 1]];
-        c2 = DEC_TABLE[data[i + 2]];
-        c3 = DEC_TABLE[data[i + 3]];
+        c0 = DEC_TBL[data[i]];
+        c1 = DEC_TBL[data[i + 1]];
+        c2 = DEC_TBL[data[i + 2]];
+        c3 = DEC_TBL[data[i + 3]];
 
         b0 = (c0 << 2) | (c1 >> 4);
         b1 = (c1 << 4) | (c2 >> 2);
