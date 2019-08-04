@@ -41,12 +41,12 @@ DEC_TABLE := [128]int {
     49, 50, 51, -1, -1, -1, -1, -1
 };
 
-encode :: proc(data: []byte, ENC_TBL := ENC_TABLE) -> string #no_bounds_check {
+encode :: proc(data: []byte, ENC_TBL := ENC_TABLE, allocator := context.allocator) -> string #no_bounds_check {
     length := len(data);
     if length == 0 do return "";
 
     out_length := ((4 * length / 3) + 3) &~ 3;
-    out := make([]byte, out_length);
+    out := make([]byte, out_length, allocator);
 
     c0, c1, c2, block: int;
 
@@ -66,13 +66,13 @@ encode :: proc(data: []byte, ENC_TBL := ENC_TABLE) -> string #no_bounds_check {
     return string(out);
 }
 
-decode :: proc(data: string, DEC_TBL := DEC_TABLE) -> []byte #no_bounds_check{
+decode :: proc(data: string, DEC_TBL := DEC_TABLE, allocator := context.allocator) -> []byte #no_bounds_check{
     length := len(data);
     if length == 0 do return []byte{};
 
     pad_count := data[length - 1] == PADDING ? (data[length - 2] == PADDING ? 2 : 1) : 0;
     out_length := ((length * 6) >> 3) - pad_count;
-    out := make([]byte, out_length);
+    out := make([]byte, out_length, allocator);
 
     c0, c1, c2, c3: int;
     b0, b1, b2: int;
