@@ -6,7 +6,7 @@ package base64
 // A secondary param can be used to supply a custom alphabet to
 // @link(encode) and a matching decoding table to @link(decode). 
 // If none is supplied it just uses the standard Base64 alphabet.
-// Incase your specific version does not use padding, you can may
+// Incase your specific version does not use padding, you may
 // truncate it from the encoded output.
 
 ENC_TABLE := [64]byte {
